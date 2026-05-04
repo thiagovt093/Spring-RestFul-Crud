@@ -1,7 +1,7 @@
 package com.exemplo.rest.controller;
 
 import com.exemplo.rest.dto.UserDTO;
-import com.exemplo.rest.model.UserResponse;
+import com.exemplo.rest.dto.UserResponse;
 import com.exemplo.rest.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
