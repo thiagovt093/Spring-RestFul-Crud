@@ -21,7 +21,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "tb_users")
+@Table(name = "users")
 public class UserModel implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +35,7 @@ public class UserModel implements UserDetails {
     @Size(min = 6, message = "A senha deve conter pelomenos 6 caracteres")
     private String password;
     @NotNull
-    private int idade;
+    private Integer idade;
     @CreationTimestamp
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime dataCriacao;

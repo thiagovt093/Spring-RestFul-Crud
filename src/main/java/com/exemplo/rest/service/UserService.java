@@ -18,6 +18,10 @@ import java.util.List;
 public class UserService {
 
     private final ModelMapper mapper = new ModelMapper();
+
+    {
+        mapper.getConfiguration().setSkipNullEnabled(true);  // --> Skip Objetos nulos
+    }
     private final BCryptPasswordEncoder bCrypt = new BCryptPasswordEncoder();
     @Autowired
     private UserRepository userRepository;
@@ -29,11 +33,20 @@ public class UserService {
                 .toList();
     }
 
-    public UserResponse salvar(UserDTO user) {
-        UserModel userModel = mapper.map(user, UserModel.class);
-        UserModel repo = userRepository.save(userModel);
-        userModel.setPassword(bCrypt.encode(user.getPassword()));
-        return mapper.map(repo, UserResponse.class);
+    public UserResponse salvar(UserDTO data) {
+        UserModel user = mapper.map(data, UserModel.class);
+        user.setPassword(bCrypt.encode(data.getPassword())); // ✅ antes do save
+        return mapper.map(userRepository.save(user), UserResponse.class);
+    }
+
+    public UserResponse atualizar(Long id, UserDTO data){
+        UserModel userModel = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+        mapper.map(data, userModel);
+
+        if(data.getPassword() != null)  userModel.setPassword(new BCryptPasswordEncoder().encode(data.getPassword()));
+
+        return mapper.map(userRepository.save(userModel), UserResponse.class);
     }
 
     public UserResponse buscarID(Long id){

@@ -25,8 +25,9 @@ public class UserController {
     public UserResponse buscar(@PathVariable Long id){
         return userService.buscarID(id);
     }
-    @PostMapping
-    public UserResponse userCreate(@Valid @RequestBody UserDTO userDTO) {
-        return userService.salvar(userDTO);
+
+    @PutMapping("{id}")
+    public UserResponse userCreate(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+        return userService.atualizar(id, userDTO);
     }
 }

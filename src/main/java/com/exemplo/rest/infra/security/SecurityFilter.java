@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
@@ -27,7 +26,9 @@ public class SecurityFilter extends OncePerRequestFilter {
         var token = this.recoverToken(request);
         if(token != null){
             var subject = tokenService.validateToken(token);
+            if(subject == null && subject.isEmpty()) throw new RuntimeException("Erro ao validar token");
             UserDetails user  = userRepository.findByEmail(subject);
+            if(user == null) throw new RuntimeException("O usuário nãoe existe");
 
             var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);

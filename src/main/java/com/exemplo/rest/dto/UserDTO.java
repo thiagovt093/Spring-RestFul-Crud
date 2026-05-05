@@ -18,5 +18,5 @@ public class UserDTO {
     @Size(min = 6, message = "A senha deve conter pelomenos 6 caracteres")
     private String password;
     @NotNull
-    private int idade;
+    private Integer idade;
 }
