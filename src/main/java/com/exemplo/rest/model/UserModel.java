@@ -35,6 +35,8 @@ public class UserModel implements UserDetails {
     private LocalDateTime dataCriacao;
     @Enumerated(EnumType.STRING)
     private UserRole role;
+    @Column(name = "refresh_token")
+    private String refreshToken;
 
     public UserModel(String login, String password, UserRole role, String name, Integer idade) {
         this.email = login;

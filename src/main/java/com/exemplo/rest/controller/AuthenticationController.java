@@ -6,8 +6,12 @@ import com.exemplo.rest.dto.RegisterDTO;
 import com.exemplo.rest.infra.security.TokenService;
 import com.exemplo.rest.model.UserModel;
 import com.exemplo.rest.repository.UserRepository;
+import com.exemplo.rest.util.HashUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,8 +37,15 @@ public class AuthenticationController {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        var token = tokenService.generateToken((UserModel) auth.getPrincipal());
-        return ResponseEntity.ok(new LoginResponseDTO(token));
+        var user = (UserModel) auth.getPrincipal();
+
+        assert user != null;
+        var acessToken = tokenService.generateToken(user);
+        var refreshToken = tokenService.generateRefreshToken(user);
+
+        user.setRefreshToken(HashUtil.hashToken(refreshToken));
+        repository.save(user);
+        return ResponseEntity.ok(new LoginResponseDTO(acessToken, refreshToken));
     }
 
     @PostMapping("/register")
@@ -49,4 +60,26 @@ public class AuthenticationController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity refresh(HttpServletRequest request){
+        var authReader = request.getHeader("Authorization");
+        if(authReader == null || !authReader.startsWith("Bearer ")) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        var refreshToken = authReader.replace("Bearer ", "");
+
+        var subject = tokenService.validateToken(refreshToken);
+        if(subject.isEmpty()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        UserModel user = (UserModel) repository.findByEmail(subject);
+        if(user == null || user.getRefreshToken() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        if(!HashUtil.hashToken(refreshToken).equals(user.getRefreshToken())) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        var newAcessToken = tokenService.generateToken(user);
+        var newRefreshToken = tokenService.generateRefreshToken(user);
+
+        user.setRefreshToken(newRefreshToken);
+        repository.save(user);
+        return ResponseEntity.ok(new LoginResponseDTO(newAcessToken, newRefreshToken));
+    }
 }
