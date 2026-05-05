@@ -26,27 +26,22 @@ public class UserModel implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotEmpty(message = "Nome Obrigatório")
     private String name;
-    @Email(message = "Email inválido")
-    @NotEmpty(message = "Email Obrigatório")
     private String email;
-    @NotEmpty(message = "Senha obrigatória")
-    @Size(min = 6, message = "A senha deve conter pelomenos 6 caracteres")
     private String password;
-    @NotNull
     private Integer idade;
     @CreationTimestamp
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime dataCriacao;
+    @Enumerated(EnumType.STRING)
     private UserRole role;
 
-
-    public UserModel(String login, String password, UserRole role, String name){
+    public UserModel(String login, String password, UserRole role, String name, Integer idade) {
         this.email = login;
         this.password = password;
         this.role = role;
         this.name = name;
+        this.idade = idade;
     }
 
     @Override
@@ -56,27 +51,17 @@ public class UserModel implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
-        return email;
-    }
+    public String getUsername() { return email; }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
-    }
+    public boolean isAccountNonExpired() { return UserDetails.super.isAccountNonExpired(); }
 
     @Override
-    public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
-    }
+    public boolean isAccountNonLocked() { return UserDetails.super.isAccountNonLocked(); }
 
     @Override
-    public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
-    }
+    public boolean isCredentialsNonExpired() { return UserDetails.super.isCredentialsNonExpired(); }
 
     @Override
-    public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
-    }
+    public boolean isEnabled() { return UserDetails.super.isEnabled(); }
 }

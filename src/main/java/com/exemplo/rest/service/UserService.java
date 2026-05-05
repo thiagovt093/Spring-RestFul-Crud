@@ -49,6 +49,11 @@ public class UserService {
         return mapper.map(userRepository.save(userModel), UserResponse.class);
     }
 
+    public void deletar(Long id) {
+        userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+        userRepository.deleteById(id);
+    }
     public UserResponse buscarID(Long id){
         UserModel user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         return mapper.map(user, UserResponse.class);
