@@ -142,9 +142,7 @@ O console do H2 estará em `http://localhost:8080/h2-console`
 
 ## 📌 Próximos passos
 
-- [ ] Trocar H2 por PostgreSQL
 - [ ] Refresh Token
-- [ ] Variáveis de ambiente para o secret JWT
 - [ ] Testes unitários com JUnit e Mockito
 - [ ] Documentação com Swagger (SpringDoc OpenAPI)
 - [ ] Deploy no Railway ou Render
